@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="1">
+    <title>HMI - Sistema de Monitoreo de Telemetria Industrial</title>
+    <style>
+        body { 
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            font-family: 'Courier New', monospace; 
+            padding: 30px; 
+            margin: 0;
+        }
+        h1 { 
+            color: #58a6ff; 
+            border-bottom: 2px solid #21262d; 
+            padding-bottom: 10px; 
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .status-banner {
+            padding: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+        #status-panel-OPERATIONAL {
+            background-color: #238636;
+            color: #ffffff;
+            border-left: 10px solid #79c0ff;
+        }
+        #status-panel-MACHINE_MISALIGNMENT {
+            background-color: #d29922;
+            color: #0d1117;
+            border-left: 10px solid #000000;
+        }
+        #status-panel-CRITICAL_G_FORCE {
+            background-color: #f85149;
+            color: #ffffff;
+            border-left: 10px solid #ffffff;
+        }
+        #status-panel-REMOTE_STOP_ACTIVE {
+            background-color: #da3633;
+            color: #ffffff;
+            border-left: 10px solid #ff7b72;
+        }
+        #status-panel-RESET_PENDING {
+            background-color: #1f6feb;
+            color: #ffffff;
+            border-left: 10px solid #ffffff;
+        }
+
+        #terminal-container { 
+            background-color: #161b22; 
+            border: 1px solid #30363d; 
+            border-radius: 4px;
+            padding: 20px; 
+            height: 380px; 
+            overflow-y: auto; 
+        }
+        #terminal-header {
+            color: #8b949e;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 1px dashed #30363d;
+            padding-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .log-row {
+            margin: 8px 0;
+            font-size: 14px;
+            padding-left: 10px;
+        }
+        .log-normal { border-left: 4px solid #238636; color: #8b949e; }
+        .log-warning { border-left: 4px solid #d29922; color: #d29922; font-weight: bold; }
+        .log-critical { border-left: 4px solid #f85149; color: #f85149; font-weight: bold; }
+        .log-system { border-left: 4px solid #58a6ff; color: #58a6ff; font-weight: bold; }
+
+        #actuation-panel { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background-color: #161b22;
+            border: 1px solid #30363d; 
+            border-radius: 4px;
+        }
+        #actuation-panel h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #8b949e;
+        }
+        #btn-stop { 
+            background-color: #da3633; 
+            color: #ffffff; 
+            padding: 12px 24px; 
+            border: 1px solid #f85149; 
+            border-radius: 4px;
+            font-weight: bold; 
+            cursor: pointer;
+        }
+        #btn-reset { 
+            background-color: #1f6feb; 
+            color: #ffffff; 
+            padding: 12px 24px; 
+            border: 1px solid #388bfd; 
+            border-radius: 4px;
+            font-weight: bold; 
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SISTEMA HMI - MONITOREO DE TELEMETRIA ESTRUCTURAL</h1>
+    
+    {% if status == 'OPERATIONAL' %}
+    <div class="status-banner" id="status-panel-OPERATIONAL">
+        ESTADO: CONDICION NOMINAL - SISTEMA EN OPERACION SEGURA
+    </div>
+    {% elif status == 'MACHINE_MISALIGNMENT' %}
+    <div class="status-banner" id="status-panel-MACHINE_MISALIGNMENT">
+        ESTADO: ADVERTENCIA - ALINEACION ESTRUCTURAL FUERA DE TOLERANCIA NOMINAL
+    </div>
+    {% elif status == 'CRITICAL_G_FORCE' %}
+    <div class="status-banner" id="status-panel-CRITICAL_G_FORCE">
+        ESTADO: FALLO CRITICO - SISTEMA BLOQUEADO POR EXCESO DE FUERZA G (REQUIERE REARME MANUAL)
+    </div>
+    {% elif status == 'REMOTE_STOP_ACTIVE' %}
+    <div class="status-banner" id="status-panel-REMOTE_STOP_ACTIVE">
+        ESTADO: PARADA DE EMERGENCIA - BLOQUEO REMOTO DE SEGURIDAD ACTIVO
+    </div>
+    {% elif status == 'RESET_PENDING' %}
+    <div class="status-banner" id="status-panel-RESET_PENDING">
+        ESTADO: PROCESANDO COMANDO - ENVIANDO SOLICITUD DE REARME AL SUBSISTEMA DE HARDWARE
+    </div>
+    {% endif %}
+    
+    <div id="terminal-container">
+        <div id="terminal-header">TIMESTAMP LOCAL (SANTIAGO) | CODIGO DE EVENTO | REGISTRO DE VECTORES FISICOS</div>
+        
+        {% for log in logs %}
+            {% if log.event_type == 'NORMAL' %}
+                <p class="log-row log-normal">
+                    [{{ log.created_at|to_local_time }}] NOMINAL  | Operacion base estable. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                </p>
+            {% elif log.event_type == 'WARNING' %}
+                <p class="log-row log-warning">
+                    [{{ log.created_at|to_local_time }}] ADVERT | Desalineacion estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                </p>
+            {% elif log.event_type == 'CRITICAL' %}
+                <p class="log-row log-critical">
+                    [{{ log.created_at|to_local_time }}] CRITICO | INTERRUPCION: Impacto o caida estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                </p>
+            {% elif log.event_type == 'SYSTEM_RESET' %}
+                <p class="log-row log-system">
+                    [{{ log.created_at|to_local_time }}] REARME  | NOTIFICACION: Sistema restablecido por el operador de planta.
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div id="actuation-panel">
+        <h3>CONTROLES DE ACTUACION Y SEGURIDAD INDUSTRIAL</h3>
+        <form action="/command" method="post">
+            <button id="btn-stop" name="action" value="STOP">SOLICITAR PARADA DE EMERGENCIA</button>
+            <button id="btn-reset" name="action" value="RESET">SOLICITAR REARME DE HARDWARE</button>
+        </form>
+    </div>
+</body>
+</html>
