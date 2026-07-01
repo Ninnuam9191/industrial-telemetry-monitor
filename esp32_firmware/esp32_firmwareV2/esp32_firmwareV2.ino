@@ -15,7 +15,7 @@ const char* ssid      = "NOMBRE_DE_TU_RED_WIFI";
 const char* password  = "CLAVE_DE_TU_RED_WIFI";
 const char* serverUrl = "http://IP_DE_TU_SERVIDOR_FLASK:5000/api/log"; 
 
-// Asignación de Pines para Indicación Lumínica de Torreta Externa (Norma IEC 60204-1)
+// Asignación de Pines para Indicación Lumínica Externa (Norma IEC 60204-1)
 const int EXT_LED_VERDE    = 12;    
 const int EXT_LED_AMARILLO = 14; 
 const int EXT_LED_ROJO     = 27;     
@@ -103,7 +103,7 @@ void loop() {
       flashToggle = !flashToggle;
       if (flashToggle) {
         setOnboardLED(true, false, false); // Rojo interno activado
-        digitalWrite(EXT_LED_ROJO, HIGH);  // Torreta externa activada
+        digitalWrite(EXT_LED_ROJO, HIGH);  // Alerta externa activada
       } else {
         setOnboardLED(false, false, false);
         digitalWrite(EXT_LED_ROJO, LOW);  
