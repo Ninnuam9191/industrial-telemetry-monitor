@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="1">
-    <title>HMI - Sistema de Monitoreo de Telemetria Industrial</title>
+    <title>HMI - Sistema de Monitoreo de Telemetría Industrial</title>
     <style>
+        /* Hojas de estilo basadas en una estética oscura industrial de alta legibilidad */
         body { 
             background-color: #0d1117; 
             color: #c9d1d9; 
@@ -20,6 +21,7 @@
             letter-spacing: 1px;
         }
         
+        /* Banners dinámicos indicadores de estado operativo general */
         .status-banner {
             padding: 20px;
             border-radius: 4px;
@@ -28,32 +30,38 @@
             font-size: 15px;
             letter-spacing: 0.5px;
         }
+        /* Estado nominal de operación en color verde normado */
         #status-panel-OPERATIONAL {
             background-color: #238636;
             color: #ffffff;
             border-left: 10px solid #79c0ff;
         }
+        /* Estado de advertencia por desalineación mecánica en color amarillo industrial */
         #status-panel-MACHINE_MISALIGNMENT {
             background-color: #d29922;
             color: #0d1117;
             border-left: 10px solid #000000;
         }
+        /* Estado crítico por exceso de fuerza G en color rojo de seguridad */
         #status-panel-CRITICAL_G_FORCE {
             background-color: #f85149;
             color: #ffffff;
             border-left: 10px solid #ffffff;
         }
+        /* Parada de emergencia activa de forma remota por el operador */
         #status-panel-REMOTE_STOP_ACTIVE {
             background-color: #da3633;
             color: #ffffff;
             border-left: 10px solid #ff7b72;
         }
+        /* Estado transicional de procesamiento de rearme inalámbrico */
         #status-panel-RESET_PENDING {
             background-color: #1f6feb;
             color: #ffffff;
             border-left: 10px solid #ffffff;
         }
 
+        /* Contenedor principal de la terminal histórica de eventos */
         #terminal-container { 
             background-color: #161b22; 
             border: 1px solid #30363d; 
@@ -71,6 +79,7 @@
             font-size: 12px;
         }
         
+        /* Filas individuales del historial de eventos con diferenciación cromática lateral */
         .log-row {
             margin: 8px 0;
             font-size: 14px;
@@ -81,6 +90,7 @@
         .log-critical { border-left: 4px solid #f85149; color: #f85149; font-weight: bold; }
         .log-system { border-left: 4px solid #58a6ff; color: #58a6ff; font-weight: bold; }
 
+        /* Panel inferior de actuación manual del operador */
         #actuation-panel { 
             margin-top: 25px; 
             padding: 20px; 
@@ -115,19 +125,19 @@
     </style>
 </head>
 <body>
-    <h1>SISTEMA HMI - MONITOREO DE TELEMETRIA ESTRUCTURAL</h1>
+    <h1>SISTEMA HMI - MONITOREO DE TELEMETRÍA ESTRUCTURAL</h1>
     
     {% if status == 'OPERATIONAL' %}
     <div class="status-banner" id="status-panel-OPERATIONAL">
-        ESTADO: CONDICION NOMINAL - SISTEMA EN OPERACION SEGURA
+        ESTADO: CONDICIÓN NOMINAL - SISTEMA EN OPERACIÓN SEGURA
     </div>
     {% elif status == 'MACHINE_MISALIGNMENT' %}
     <div class="status-banner" id="status-panel-MACHINE_MISALIGNMENT">
-        ESTADO: ADVERTENCIA - ALINEACION ESTRUCTURAL FUERA DE TOLERANCIA NOMINAL
+        ESTADO: ADVERTENCIA - ALINEACIÓN ESTRUCTURAL FUERA DE TOLERANCIA NOMINAL
     </div>
     {% elif status == 'CRITICAL_G_FORCE' %}
     <div class="status-banner" id="status-panel-CRITICAL_G_FORCE">
-        ESTADO: FALLO CRITICO - SISTEMA BLOQUEADO POR EXCESO DE FUERZA G (REQUIERE REARME MANUAL)
+        ESTADO: FALLO CRÍTICO - SISTEMA BLOQUEADO POR EXCESO DE FUERZA G (REQUIERE REARME MANUAL)
     </div>
     {% elif status == 'REMOTE_STOP_ACTIVE' %}
     <div class="status-banner" id="status-panel-REMOTE_STOP_ACTIVE">
@@ -140,31 +150,31 @@
     {% endif %}
     
     <div id="terminal-container">
-        <div id="terminal-header">TIMESTAMP LOCAL (SANTIAGO) | CODIGO DE EVENTO | REGISTRO DE VECTORES FISICOS</div>
+        <div id="terminal-header">TIMESTAMP LOCAL (SANTIAGO) | CÓDIGO DE EVENTO | REGISTRO DE VECTORES FÍSICOS</div>
         
         {% for log in logs %}
             {% if log.event_type == 'NORMAL' %}
                 <p class="log-row log-normal">
-                    [{{ log.created_at|to_local_time }}] NOMINAL  | Operacion base estable. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                    [{{ log.created_at|to_local_time }}] NOMINAL  | Operación base estable. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
                 </p>
             {% elif log.event_type == 'WARNING' %}
                 <p class="log-row log-warning">
-                    [{{ log.created_at|to_local_time }}] ADVERT | Desalineacion estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                    [{{ log.created_at|to_local_time }}] ADVERT  | Desalineación estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
                 </p>
             {% elif log.event_type == 'CRITICAL' %}
                 <p class="log-row log-critical">
-                    [{{ log.created_at|to_local_time }}] CRITICO | INTERRUPCION: Impacto o caida estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
+                    [{{ log.created_at|to_local_time }}] CRÍTICO | INTERRUPCIÓN: Impacto o caída estructural detectada. (X:{{ "%.2f"|format(log.x_axis) }} Y:{{ "%.2f"|format(log.y_axis) }} Z:{{ "%.2f"|format(log.z_axis) }})
                 </p>
             {% elif log.event_type == 'SYSTEM_RESET' %}
                 <p class="log-row log-system">
-                    [{{ log.created_at|to_local_time }}] REARME  | NOTIFICACION: Sistema restablecido por el operador de planta.
+                    [{{ log.created_at|to_local_time }}] REARME  | NOTIFICACIÓN: Sistema restablecido por el operador de planta.
                 </p>
             {% endif %}
         {% endfor %}
     </div>
 
     <div id="actuation-panel">
-        <h3>CONTROLES DE ACTUACION Y SEGURIDAD INDUSTRIAL</h3>
+        <h3>CONTROLES DE ACTUACIÓN Y SEGURIDAD INDUSTRIAL</h3>
         <form action="/command" method="post">
             <button id="btn-stop" name="action" value="STOP">SOLICITAR PARADA DE EMERGENCIA</button>
             <button id="btn-reset" name="action" value="RESET">SOLICITAR REARME DE HARDWARE</button>
