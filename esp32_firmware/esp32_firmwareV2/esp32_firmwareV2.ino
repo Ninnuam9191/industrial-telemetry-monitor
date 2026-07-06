@@ -11,9 +11,9 @@
 #include <ArduinoJson.h> 
 
 // Parámetros de red e infraestructura (Datos sensibles anonimizados)
-const char* ssid      = "NOMBRE_DE_TU_RED_WIFI";
-const char* password  = "CLAVE_DE_TU_RED_WIFI";
-const char* serverUrl = "http://IP_DE_TU_SERVIDOR_FLASK:5000/api/log"; 
+const char* ssid      = "nombrered";
+const char* password  = "pass";
+const char* serverUrl = "http://ip servidor flask/api/log"; 
 
 // Asignación de Pines para Indicación Lumínica Externa (Norma IEC 60204-1)
 const int EXT_LED_VERDE    = 12;    
@@ -191,4 +191,14 @@ void loop() {
           resetHttp.POST(resetJson);
           resetHttp.end();
           
-          // Liberación inmediata de los bloqueos de hardware
+          // Liberamos las restricciones locales de inmediato
+          hardwareSafetyLatch = false;
+          lastSentEventType = ""; 
+          Serial.println("[OK] Rearme procesado y registrado.");
+        }
+      }
+      http.end();
+    }
+  }
+  delay(200); 
+}
